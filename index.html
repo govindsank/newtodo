@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Form</title>
+    </head>
+    <body>
+        <form onsubmit="setTodo(event)">
+            <input type="text" name="todo" id="todo">
+            <input type="submit">
+        </form>
+        <ol id="list"></ol>
+        <script>
+            let todo=document.getElementById("todo");
+            let list =document.getElementById("list");
+            function setTodo(event){
+                event.preventDefault();
+                fetch(`http://localhost:3000/set-todo?todo=${todo.value}`)
+                .then(res => res.text())
+                .then(data =>{
+                    alert(data);
+                    print();
+                })
+            }
+
+            function print(){
+                fetch("http://localhost:3000/get-todo")
+                .then((res) => res.json())
+                .then((data) => {
+                    list.innerHTML="";
+                    data.forEach((item, index) => {
+                        let li = `<li>
+                            ${item.todo}
+                            <button onclick="delete(${index})">del</button>
+                            <button onclick="edit(${index})">edit</button>
+                            </li>`;
+                            list.innerHTML +=li;                        
+                    });
+                });
+            }
+
+print();
+
+                function edit(index){
+                    let newTodo = prompt("enter the new todo");
+                    fetch(`http://localhost:3000/edit-todo?id=${index}&newTodo=${newTodo}`)
+                    .then(res => res.text())
+                    .then(data => {
+                        alert(data);
+                        print();
+                    })
+                   
+                }
+                     function del(index){
+                        fetch(`http://localhost:3000/delete-todo?id=${index}`)
+                        .then(res =>res.text())
+                        .then(data =>{
+                            alert(data);
+                            print();
+                        })
+                    }
+
+
+
+        </script>
+    </body>
+</html>
